@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use DateTime;
+
 class Flight
 {
     private Airport $fromAirport;
@@ -11,7 +13,12 @@ class Flight
     private string $toTime;
     private string $toDate;
 
-    public function __construct(Airport $fromAirport, string $fromTime, Airport $toAirport, string $toTime, string $fromDate, string$toDate)
+//    private string $fromTimeZone;
+//    private string $toTimezone;
+
+    public function __construct(
+        Airport $fromAirport, string $fromTime, Airport $toAirport, string $toTime, string $fromDate, string $toDate
+    )
     {
         $this->fromAirport = $fromAirport;
         $this->fromTime = $fromTime;
@@ -19,6 +26,8 @@ class Flight
         $this->toAirport = $toAirport;
         $this->toTime = $toTime;
         $this->toDate = $toDate;
+//        $this->toTimezone = $toTimezone;
+//        $this->fromTimeZone = $fromTimeZone;
     }
 
     public function getFromAirport(): Airport
@@ -51,15 +60,30 @@ class Flight
         return $this->toDate;
     }
 
+//    public function getFromTimeZone(): Airport
+//    {
+//        return $this->fromTimeZone;
+//    }
+//
+//    public function getToTimeZone(): Airport
+//    {
+//        return $this->toTimezone;
+//    }
+
     public function calculateDurationMinutes(): int
     {
-        return $this->calculateMinutesFromStartDay($this->toTime) - $this->calculateMinutesFromStartDay($this->fromTime);
+        return $this->calculateMinutesFromStartDay($this->fromDate . ' ' . $this->fromTime, $this->toDate . ' ' . $this->toTime);
     }
 
-    private function calculateMinutesFromStartDay(string $time): int
+    private function calculateMinutesFromStartDay(string $fromTime, string $toTime): int
     {
-        [$hour, $minutes] = explode(':', $time, 2);
+        $fromTime = new DateTime($fromTime);
+        $toTime = new DateTime($toTime);
+        $differenceObj = $fromTime->diff($toTime);
+        if ($differenceObj->invert === 1) {
+            $minus = '-';
+        } else {$minus = '';}
 
-        return 60 * (int) $hour + (int) $minutes;
+        return $minus . $differenceObj->d * 1440 + $differenceObj->h * 60 + $differenceObj->i;
     }
 }
