@@ -10,6 +10,7 @@ class FlightRepository extends AbstractRepository
     private const FROM_DATA_KEY = 'from';
     private const TO_DATA_KEY = 'to';
     private const AIRPORT_DATA_KEY = 'airport';
+    private const DATE_DATA_KEY = 'date';
     private const TIME_DATA_KEY = 'time';
 
     private JsonParser $jsonParser;
@@ -40,14 +41,16 @@ class FlightRepository extends AbstractRepository
     {
         $this->assertKeysExists($flightData, [self::FROM_DATA_KEY, self::TO_DATA_KEY]);
         [self::FROM_DATA_KEY => $fromData, self::TO_DATA_KEY => $toData] = $flightData;
-        $this->assertKeysExists($fromData, [self::AIRPORT_DATA_KEY, self::TIME_DATA_KEY]);
-        $this->assertKeysExists($toData, [self::AIRPORT_DATA_KEY, self::TIME_DATA_KEY]);
+        $this->assertKeysExists($fromData, [self::AIRPORT_DATA_KEY, self::TIME_DATA_KEY, self::DATE_DATA_KEY]);
+        $this->assertKeysExists($toData, [self::AIRPORT_DATA_KEY, self::TIME_DATA_KEY, self::DATE_DATA_KEY]);
 
         return new Flight(
             $this->airportRepository->getAirport($fromData[self::AIRPORT_DATA_KEY]),
             $fromData[self::TIME_DATA_KEY],
             $this->airportRepository->getAirport($toData[self::AIRPORT_DATA_KEY]),
-            $toData[self::TIME_DATA_KEY]
+            $toData[self::TIME_DATA_KEY],
+            $fromData[self::DATE_DATA_KEY],
+            $toData[self::DATE_DATA_KEY],
         );
     }
 }

@@ -101,9 +101,9 @@ class ShowAirportBoardCommand extends Command
                 return [
                     '#' => $rowIndex++,
                     'from' => $this->buildAirportTitle($flight->getFromAirport()),
-                    'from time' => $flight->getFromTime(),
+                    'departure' => $flight->getFromDate() . ' ' . $flight->getFromTime(),
                     'to' => $this->buildAirportTitle($flight->getToAirport()),
-                    'to time' => $flight->getToTime(),
+                    'arrival' => $flight->getToDate() . ' ' . $flight->getToTime(),
                     'duration' => new DurationHumanFormatter($flight->calculateDurationMinutes()),
                 ];
             },

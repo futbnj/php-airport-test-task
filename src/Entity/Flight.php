@@ -6,15 +6,19 @@ class Flight
 {
     private Airport $fromAirport;
     private string $fromTime;
+    private string $fromDate;
     private Airport $toAirport;
     private string $toTime;
+    private string $toDate;
 
-    public function __construct(Airport $fromAirport, string $fromTime, Airport $toAirport, string $toTime)
+    public function __construct(Airport $fromAirport, string $fromTime, Airport $toAirport, string $toTime, string $fromDate, string$toDate)
     {
         $this->fromAirport = $fromAirport;
         $this->fromTime = $fromTime;
+        $this->fromDate = $fromDate;
         $this->toAirport = $toAirport;
         $this->toTime = $toTime;
+        $this->toDate = $toDate;
     }
 
     public function getFromAirport(): Airport
@@ -27,6 +31,11 @@ class Flight
         return $this->fromTime;
     }
 
+    public function getFromDate(): string
+    {
+        return $this->fromDate;
+    }
+
     public function getToAirport(): Airport
     {
         return $this->toAirport;
@@ -35,6 +44,11 @@ class Flight
     public function getToTime(): string
     {
         return $this->toTime;
+    }
+
+    public function getToDate(): string
+    {
+        return $this->toDate;
     }
 
     public function calculateDurationMinutes(): int
