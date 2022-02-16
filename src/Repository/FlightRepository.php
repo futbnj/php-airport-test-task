@@ -51,6 +51,8 @@ class FlightRepository extends AbstractRepository
             $toData[self::TIME_DATA_KEY],
             $fromData[self::DATE_DATA_KEY],
             $toData[self::DATE_DATA_KEY],
+            $this->airportRepository->getAirport($fromData[self::AIRPORT_DATA_KEY])->getTimezone(),
+            $this->airportRepository->getAirport($toData[self::AIRPORT_DATA_KEY])->getTimezone(),
         );
     }
 }

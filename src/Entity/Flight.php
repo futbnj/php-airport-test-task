@@ -13,11 +13,18 @@ class Flight
     private string $toTime;
     private string $toDate;
 
-//    private string $fromTimeZone;
-//    private string $toTimezone;
+    private string $fromTimeZone;
+    private string $toTimezone;
 
     public function __construct(
-        Airport $fromAirport, string $fromTime, Airport $toAirport, string $toTime, string $fromDate, string $toDate
+        Airport $fromAirport,
+        string $fromTime,
+        Airport $toAirport,
+        string $toTime,
+        string $fromDate,
+        string $toDate,
+        string $fromTimeZone,
+        string $toTimezone
     )
     {
         $this->fromAirport = $fromAirport;
@@ -26,8 +33,8 @@ class Flight
         $this->toAirport = $toAirport;
         $this->toTime = $toTime;
         $this->toDate = $toDate;
-//        $this->toTimezone = $toTimezone;
-//        $this->fromTimeZone = $fromTimeZone;
+        $this->toTimezone = $toTimezone;
+        $this->fromTimeZone = $fromTimeZone;
     }
 
     public function getFromAirport(): Airport
@@ -60,15 +67,15 @@ class Flight
         return $this->toDate;
     }
 
-//    public function getFromTimeZone(): Airport
-//    {
-//        return $this->fromTimeZone;
-//    }
-//
-//    public function getToTimeZone(): Airport
-//    {
-//        return $this->toTimezone;
-//    }
+    public function getFromTimeZone(): string
+    {
+        return $this->fromTimeZone;
+    }
+
+    public function getToTimeZone(): string
+    {
+        return $this->toTimezone;
+    }
 
     public function calculateDurationMinutes(): int
     {
@@ -80,10 +87,13 @@ class Flight
         $fromTime = new DateTime($fromTime);
         $toTime = new DateTime($toTime);
         $differenceObj = $fromTime->diff($toTime);
-        if ($differenceObj->invert === 1) {
-            $minus = '-';
-        } else {$minus = '';}
+        $differenceTimezone = (int) preg_replace("/[^-+0-9]/", '', $this->fromTimeZone) - (int) preg_replace("/[^-+0-9]/", '', $this->toTimezone);
 
-        return $minus . $differenceObj->d * 1440 + $differenceObj->h * 60 + $differenceObj->i;
+        if ($differenceObj->invert === 1) {
+            return -1*($differenceObj->d * 1440 + $differenceObj->h * 60 + $differenceObj->i) + ($differenceTimezone * 60);
+        } else {
+            return $differenceObj->d * 1440 + $differenceObj->h * 60 + $differenceObj->i + ($differenceTimezone * 60);
+        }
+
     }
 }
