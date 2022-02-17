@@ -13,7 +13,7 @@ class Flight
     private string $toTime;
     private string $toDate;
 
-    private string $fromTimeZone;
+    private string $fromTimezone;
     private string $toTimezone;
 
     public function __construct(
@@ -23,7 +23,7 @@ class Flight
         string $toTime,
         string $fromDate,
         string $toDate,
-        string $fromTimeZone,
+        string $fromTimezone,
         string $toTimezone
     )
     {
@@ -34,7 +34,7 @@ class Flight
         $this->toTime = $toTime;
         $this->toDate = $toDate;
         $this->toTimezone = $toTimezone;
-        $this->fromTimeZone = $fromTimeZone;
+        $this->fromTimezone = $fromTimezone;
     }
 
     public function getFromAirport(): Airport
@@ -67,33 +67,42 @@ class Flight
         return $this->toDate;
     }
 
-    public function getFromTimeZone(): string
-    {
-        return $this->fromTimeZone;
-    }
-
-    public function getToTimeZone(): string
-    {
-        return $this->toTimezone;
-    }
-
     public function calculateDurationMinutes(): int
     {
-        return $this->calculateMinutesFromStartDay($this->fromDate . ' ' . $this->fromTime, $this->toDate . ' ' . $this->toTime);
+        return $this->calculateDateTimeDifference() + $this->calculateTimezoneDifference();
     }
 
-    private function calculateMinutesFromStartDay(string $fromTime, string $toTime): int
+    private function calculateDateTimeDifference(): int
     {
-        $fromTime = new DateTime($fromTime);
-        $toTime = new DateTime($toTime);
-        $differenceObj = $fromTime->diff($toTime);
-        $differenceTimezone = (int) preg_replace("/[^-+0-9]/", '', $this->fromTimeZone) - (int) preg_replace("/[^-+0-9]/", '', $this->toTimezone);
+        $diffDateTime =
+            $this->toDateTime($this->fromDate, $this->fromTime)->diff($this->toDateTime($this->toDate, $this->toTime));
 
-        if ($differenceObj->invert === 1) {
-            return -1*($differenceObj->d * 1440 + $differenceObj->h * 60 + $differenceObj->i) + ($differenceTimezone * 60);
+        if ($diffDateTime->invert === 1) {
+            return -1*($diffDateTime->d * 1440 + $diffDateTime->h * 60 + $diffDateTime->i);
         } else {
-            return $differenceObj->d * 1440 + $differenceObj->h * 60 + $differenceObj->i + ($differenceTimezone * 60);
+            return $diffDateTime->d * 1440 + $diffDateTime->h * 60 + $diffDateTime->i;
         }
+    }
 
+    private function calculateTimezoneDifference(): int
+    {
+        $diffTimezone =
+            $this->formatTimezone($this->fromTimezone) - $this->formatTimezone($this->toTimezone);
+
+        return $diffTimezone * 60;
+    }
+
+    private function formatTimezone(string $timezone): string
+    {
+        return preg_replace("/[^-+0-9]/", '', $timezone);
+    }
+
+    private function toDateTime(string $date, string $time): DateTime | string
+    {
+        try {
+            return new DateTime($date . ' ' . $time);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }
